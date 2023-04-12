@@ -1,36 +1,36 @@
 package com.example.progmprojet
 
+import android.app.Activity
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.progmprojet.ui.theme.ProgMProjetTheme
+import android.widget.AdapterView
+import android.widget.Button
+import android.widget.ListView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        val intent = Intent(this, WifiDirectActivity::class.java)
-        startActivity(intent)
-    }
-}
+        val quizz : Intent =  Intent(this,TapTaupe::class.java)
+        val button: Button = findViewById(R.id.button)
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
+        var getResult =
+            registerForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) {
+                if (it.resultCode == Activity.RESULT_OK) {
+                    val value = it.data?.getStringExtra("input")
+                    System.out.println(value)
+                }
+            }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    ProgMProjetTheme {
-        Greeting("Android")
+        button.setOnClickListener{
+            getResult.launch(quizz)
+        }
     }
 }

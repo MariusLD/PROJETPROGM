@@ -12,6 +12,15 @@
         android:theme="@style/Theme.WifiDirectDemo"
         tools:targetApi="31">
         <activity
+            android:name=".QuizzSound"
+            android:exported="false" />
+        <activity
+            android:name=".TapTaupe"
+            android:exported="false" />
+        <activity
+            android:name=".Quizz"
+            android:exported="false" />
+        <activity
             android:name=".SnakeWithoutSnake"
             android:exported="true"
             android:theme="@style/Theme.WifiDirectDemo.NoActionBar"/>
