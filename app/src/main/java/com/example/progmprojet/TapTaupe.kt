@@ -1,5 +1,6 @@
 package com.example.progmprojet
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -51,6 +52,9 @@ class TapTaupe : AppCompatActivity() {
                     vie=vie-1
                     vieText.setText("Vie :" + vie)
                     if(vie==0){
+                        val main : Intent =  Intent(this,MainActivity::class.java)
+                        main.putExtra("input",score)
+                        setResult(RESULT_OK,main)
                         finish()
                     }
                 }

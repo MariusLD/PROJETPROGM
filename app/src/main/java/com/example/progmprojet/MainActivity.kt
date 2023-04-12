@@ -10,12 +10,19 @@ import android.widget.ListView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 
+import kotlin.collections.ArrayList
+import kotlin.random.Random
+
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        var minijeux = ArrayList<Class<*>>()
+        minijeux.add(TapTaupe::class.java)
+        minijeux.add(Quizz::class.java)
+        minijeux.add(QuizzSound::class.java)
+        minijeux= minijeux.shuffled() as ArrayList<Class<*>>
         val quizz : Intent =  Intent(this,TapTaupe::class.java)
         val button: Button = findViewById(R.id.button)
 
@@ -30,7 +37,9 @@ class MainActivity : AppCompatActivity() {
             }
 
         button.setOnClickListener{
-            getResult.launch(quizz)
+            for(i in 0..2) {
+                getResult.launch(Intent(this,minijeux.get(i)))
+            }
         }
     }
 }
