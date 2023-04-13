@@ -14,7 +14,7 @@ import kotlin.collections.ArrayList
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
-
+    var score : Int =0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if (it.resultCode == Activity.RESULT_OK) {
                     val value = it.data?.getStringExtra("input")
-                    System.out.println(value)
+                    score += value!!.toInt()
                 }
             }
 
