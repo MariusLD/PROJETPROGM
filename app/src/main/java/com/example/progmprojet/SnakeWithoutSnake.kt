@@ -2,6 +2,8 @@ package com.example.progmprojet
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Rect
+import android.graphics.RectF
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -23,7 +25,7 @@ class SnakeWithoutSnake : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_snake_without_snake)
         val score = findViewById<TextView>(R.id.score)
-        val map = findViewById<RelativeLayout>(R.id.board)
+        val board = findViewById<RelativeLayout>(R.id.board)
         val food = ImageView(this)
         val pig = ImageView(this)
         val tracking = mutableListOf(pig)
@@ -35,7 +37,12 @@ class SnakeWithoutSnake : AppCompatActivity() {
             100,
             100
         )
-        map.addView(pig)
+        val centerX = board.width / 2 - pig.width / 2
+        val centerY = board.height / 2 - pig.height / 2
+        pig.translationX = centerX.toFloat()
+        pig.translationY = centerY.toFloat()
+
+        board.addView(pig)
         tracking.add(pig)
         var snakeX = pig.x
         var snakeY = pig.y
@@ -45,7 +52,7 @@ class SnakeWithoutSnake : AppCompatActivity() {
             100,
             100
         )
-        map.addView(food)
+        board.addView(food)
         val random = Random()
         val randomX = random.nextInt(801) - 400
         val randomY = random.nextInt(801) - 400
@@ -66,7 +73,7 @@ class SnakeWithoutSnake : AppCompatActivity() {
                     100,
                     100
                 )
-                map.addView(newPig)
+                board.addView(newPig)
                 tracking.add(newPig)
 
                 // On génère alors une nouvelle pomme
@@ -83,17 +90,30 @@ class SnakeWithoutSnake : AppCompatActivity() {
 
         val runnable = object : Runnable {
             override fun run() {
+                println(snakeY)
                 // On update la position du corps, sauf la tête évidemment
                 for (i in tracking.size - 1 downTo 1) {
                     tracking[i].x = tracking[i - 1].x
                     tracking[i].y = tracking[i - 1].y
                 }
+                // Get the bounds of the board view in screen coordinates
+                val boardBounds = Rect()
+                board.getGlobalVisibleRect(boardBounds)
 
+                // Set the limits of the map based on the bounds of the board view
+                val map = RectF(
+                    boardBounds.left.toFloat(),
+                    boardBounds.top.toFloat(),
+                    boardBounds.right.toFloat(),
+                    boardBounds.bottom.toFloat()
+                )
+
+                // Use the map limits in your code
                 when (currentDirection) {
                     "up" -> {
                         snakeY -= 10
-                        if (snakeY > map.top) {
-                            snakeY = map.top.toFloat()
+                        if (snakeY < -(board.height/2)+score.height) {
+                            snakeY = (-(board.height/2)+score.height).toFloat()
                             currentDirection = "pause"
                             println("Game Over")
                         }
@@ -101,20 +121,17 @@ class SnakeWithoutSnake : AppCompatActivity() {
                     }
                     "down" -> {
                         snakeY += 10
-                        println(snakeX)
-                        if (snakeY < map.bottom) {
-                            snakeY = map.bottom.toFloat()
+                        if (snakeY > (board.height/2)+score.height) {
+                            snakeY = ((board.height/2)+score.height).toFloat()
                             currentDirection = "pause"
                             println("Game Over")
                         }
                         pig.translationY = snakeY
                     }
-                    //Quand on penche le portable à droite, il va à gauche, et snakeX va dans les négatifs
                     "left" -> {
-                        snakeX -= 10
-                        println(snakeX)
-                        if (snakeX > map.right) {
-                            snakeX = map.right.toFloat()
+                        snakeX += 10
+                        if (snakeX < -(board.width/2)) {
+                            snakeX = (board.width/2).toFloat()
                             currentDirection = "pause"
                             println("Game Over")
                         }
@@ -122,19 +139,20 @@ class SnakeWithoutSnake : AppCompatActivity() {
                     }
                     "right" -> {
                         snakeX += 10
-                        if (snakeX < map.left) {
-                            snakeX = map.left.toFloat()
+                        snakeX -= 10
+                        if (snakeX > board.width/2) {
+                            snakeX = (-(board.width/2)).toFloat()
                             currentDirection = "pause"
                             println("Game Over")
                         }
                         pig.translationX = snakeX
                     }
-
                     "pause" -> {
                         snakeX += 0
                         pig.translationX = snakeX
                     }
                 }
+                
                 checkFoodCollision()
                 handler.postDelayed(this, delayMillis.toLong())
             }
