@@ -1,36 +1,45 @@
 package com.example.progmprojet
 
+import android.app.Activity
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.progmprojet.ui.theme.ProgMProjetTheme
+import android.widget.AdapterView
+import android.widget.Button
+import android.widget.ListView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 
-class MainActivity : ComponentActivity() {
+import kotlin.collections.ArrayList
+import kotlin.random.Random
+
+class MainActivity : AppCompatActivity() {
+    var score : Int =0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        var minijeux = ArrayList<Class<*>>()
+        minijeux.add(TapTaupe::class.java)
+        minijeux.add(Quizz::class.java)
+        minijeux.add(QuizzSound::class.java)
+        minijeux= minijeux.shuffled() as ArrayList<Class<*>>
+        val quizz : Intent =  Intent(this,TapTaupe::class.java)
+        val button: Button = findViewById(R.id.button)
 
-        val intent = Intent(this, WifiDirectActivity::class.java)
-        startActivity(intent)
-    }
-}
+        var getResult =
+            registerForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) {
+                if (it.resultCode == Activity.RESULT_OK) {
+                    val value = it.data?.getStringExtra("input")
+                    score += value!!.toInt()
+                }
+            }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    ProgMProjetTheme {
-        Greeting("Android")
+        button.setOnClickListener{
+            for(i in 0..2) {
+                getResult.launch(Intent(this,minijeux.get(i)))
+            }
+        }
     }
 }
