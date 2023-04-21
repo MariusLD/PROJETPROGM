@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "240550350491",
+    "project_id": "progm-project",
+    "storage_bucket": "progm-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:240550350491:android:6c57701e14e3caa929003e",
+        "android_client_info": {
+          "package_name": "com.example.progmprojet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "240550350491-83nn7j6glvn6aafem4jrvb5dlqhumvtg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkNrXOV8gPqKMLVD75qvGIdb3K9PHcakQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "240550350491-83nn7j6glvn6aafem4jrvb5dlqhumvtg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
