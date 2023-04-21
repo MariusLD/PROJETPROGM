@@ -2,6 +2,7 @@ package com.example.progmprojet
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -9,9 +10,12 @@ import android.hardware.SensorManager
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.widget.TextView
 
 class PieGame : AppCompatActivity() {
+
+    private var countDownTimer: CountDownTimer? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pie_game)
@@ -37,5 +41,26 @@ class PieGame : AppCompatActivity() {
             }
         }
         sm.registerListener(se, mySensor, SensorManager.SENSOR_DELAY_NORMAL)
+
+        val timerTextView: TextView = findViewById(R.id.timer)
+        countDownTimer = object : CountDownTimer(30000, 1000) { // 30 seconds timer
+            override fun onTick(millisUntilFinished: Long) {
+                timerTextView.text = (millisUntilFinished / 1000).toString()
+            }
+
+            override fun onFinish() {
+                val main : Intent =  Intent(this@PieGame,MainActivity::class.java)
+                val score: TextView = findViewById(R.id.score)
+                val scoreInt : String = score.text.toString()
+                main.putExtra("input",""+scoreInt)
+                setResult(RESULT_OK,main)
+                finish()
+            }
+        }
+        countDownTimer?.start()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        countDownTimer?.cancel()
     }
 }

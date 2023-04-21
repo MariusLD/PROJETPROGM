@@ -1,7 +1,9 @@
 package com.example.progmprojet
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.MotionEvent
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -11,6 +13,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 
 class CutBle : AppCompatActivity() {
+
+    var countDownTimer: CountDownTimer? = null
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,5 +80,26 @@ class CutBle : AppCompatActivity() {
             }
             true
         }
+
+        val timerTextView: TextView = findViewById(R.id.timer)
+        countDownTimer = object : CountDownTimer(30000, 1000) { // 30 seconds timer
+            override fun onTick(millisUntilFinished: Long) {
+                timerTextView.text = (millisUntilFinished / 1000).toString()
+            }
+
+            override fun onFinish() {
+                val main : Intent =  Intent(this@CutBle,MainActivity::class.java)
+                val score: TextView = findViewById(R.id.score)
+                val scoreInt : String = score.text.toString()
+                main.putExtra("input",""+scoreInt)
+                setResult(RESULT_OK,main)
+                finish()
+            }
+        }
+        countDownTimer?.start()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        countDownTimer?.cancel()
     }
 }

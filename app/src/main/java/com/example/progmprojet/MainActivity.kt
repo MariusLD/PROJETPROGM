@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity() {
         minijeux.add(TapTaupe::class.java)
         minijeux.add(Quizz::class.java)
         minijeux.add(QuizzSound::class.java)
+        minijeux.add(PieGame::class.java)
+        minijeux.add(CutBle::class.java)
         minijeux= minijeux.shuffled() as ArrayList<Class<*>>
         val quizz : Intent =  Intent(this,TapTaupe::class.java)
         val button: Button = findViewById(R.id.button)
