@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         minijeux= minijeux.shuffled() as ArrayList<Class<*>>
         val quizz : Intent =  Intent(this,TapTaupe::class.java)
         val button: Button = findViewById(R.id.button)
+        val leaderboard: Button = findViewById(R.id.leaderboard)
 
         var getResult =
             registerForActivityResult(
@@ -42,6 +43,12 @@ class MainActivity : AppCompatActivity() {
             for(i in 0..2) {
                 getResult.launch(Intent(this,minijeux.get(i)))
             }
+        }
+
+        leaderboard.setOnClickListener{
+            // Start Activity Leaderboard
+            val intent = Intent(this, Leaderboard::class.java)
+            startActivity(intent)
         }
     }
 }
