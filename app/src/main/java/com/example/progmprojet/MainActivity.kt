@@ -35,8 +35,10 @@ class MainActivity : AppCompatActivity() {
                 ActivityResultContracts.StartActivityForResult()
             ) {
                 if (it.resultCode == Activity.RESULT_OK) {
-                    val value = it.data?.getStringExtra("input")
-                    score += value!!.toInt()
+                    val value = it.data?.getIntExtra("input",0)
+                    if (value != null) {
+                        score += value
+                    }
                 }
             }
 

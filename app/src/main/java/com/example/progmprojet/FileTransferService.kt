@@ -31,9 +31,11 @@ class FileTransferService : IntentService {
             val port = intent.extras!!.getInt(EXTRAS_GROUP_OWNER_PORT)
             val point = intent.extras!!.getInt("point")
             val score :Boolean= intent.extras!!.getBoolean("score")
-            var jeu: ArrayList<Int>? =null
+            var jeu: ArrayList<Int> =ArrayList<Int>()
             if(!score){
-                jeu=intent.extras!!.getSerializable("jeu") as ArrayList<Int>
+                jeu.add(intent.extras!!.getInt("jeu1"))
+                jeu.add(intent.extras!!.getInt("jeu2"))
+                jeu.add(intent.extras!!.getInt("jeu3"))
             }
             //System.out.println("")
             try {
@@ -57,10 +59,11 @@ class FileTransferService : IntentService {
                     }else {
                         if (jeu != null) {
                             for (i in jeu.indices) {
-                                stream.writeInt(jeu[i]) // écrire chaque élément du tableau
+                                stream.write(jeu.get(i)) // écrire chaque élément du tableau
                             }
                         }
                     }
+                    inputstream.close()
                     stream.close();
                 } catch (e: FileNotFoundException) {
                     Log.d(WifiDirectActivity.TAG, e.toString())

@@ -106,6 +106,8 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
         minijeux.add(TapTaupe::class.java)
         minijeux.add(Quizz::class.java)
         minijeux.add(QuizzSound::class.java)
+        minijeux.add(PieGame::class.java)
+        minijeux.add(CutBle::class.java)
 
         for(i in list) {
             startActivityForResult(Intent(activity,minijeux.get(i)), 1)
@@ -149,9 +151,12 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
         val numbers = ArrayList<Int>()
 
         while (numbers.size < 3) {
-            numbers.add(random.nextInt(3))
+            val rt=random.nextInt(5)
+            numbers.add(rt)
         }
-        serviceIntent.putExtra("jeu",numbers)
+        serviceIntent.putExtra("jeu1", numbers[0])
+        serviceIntent.putExtra("jeu2", numbers[1])
+        serviceIntent.putExtra("jeu3", numbers[2])
         serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988)
         activity.startService(serviceIntent)
 
@@ -244,7 +249,7 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
         init {
             this.statusText = statusText as TextView
             this.fragment=fragment
-            this.game=ArrayList<Int>(3)
+            this.game=ArrayList<Int>()
 
         }
 
@@ -264,11 +269,12 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
                 f.createNewFile()
                 Log.d(WifiDirectActivity.TAG, "server: copying files $f")
 
-                val inputstream = DataInputStream(client.getInputStream())
+                //val inputstream = DataInputStream(client.getInputStream())
+                val inputstream = client.getInputStream()
 
                 for (i in 0..2) {
-                    game.add(inputstream.readInt()) // lire chaque élément du tableau
-                    System.out.println(game.get(i))
+                    game.add(inputstream.read()) // lire chaque élément du tableau
+
                 }
 
                 serverSocket.close()

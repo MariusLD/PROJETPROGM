@@ -66,7 +66,7 @@ class PieGame : AppCompatActivity() {
                 val main : Intent =  Intent(this@PieGame,MainActivity::class.java)
                 val score: TextView = findViewById(R.id.score)
                 val scoreInt : Int = score.text.toString().toInt()
-                main.putExtra("input",""+scoreInt)
+                main.putExtra("input",scoreInt)
                 setResult(RESULT_OK,main)
                 val dbScoreRef = dbRef.child(getMacAddr())
                 dbScoreRef.addListenerForSingleValueEvent(object : ValueEventListener {
