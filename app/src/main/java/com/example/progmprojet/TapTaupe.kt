@@ -53,7 +53,7 @@ class TapTaupe : AppCompatActivity() {
                     vieText.setText("Vie :" + vie)
                     if(vie==0){
                         val main : Intent =  Intent(this,MainActivity::class.java)
-                        main.putExtra("input",""+score)
+                        main.putExtra("input",score)
                         setResult(RESULT_OK,main)
                         finish()
                     }

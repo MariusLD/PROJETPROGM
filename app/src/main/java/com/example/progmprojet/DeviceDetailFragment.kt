@@ -1,5 +1,6 @@
 package com.example.progmprojet
 
+import android.app.Activity
 import android.app.Fragment
 import android.app.ProgressDialog
 import android.content.Context
@@ -16,10 +17,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.example.progmprojet.DeviceListFragment.DeviceActionListener
 import java.io.*
 import java.net.ServerSocket
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * A fragment that manages a particular peer and allows interaction with device
@@ -30,6 +35,9 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
     private var device: WifiP2pDevice? = null
     private var info: WifiP2pInfo? = null
     var progressDialog: ProgressDialog? = null
+    var game: ArrayList<Int>? = null
+    var compteur=0
+    private var score=0
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
     }
@@ -72,35 +80,86 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
             object : View.OnClickListener {
                 override fun onClick(v: View) {
                     // Allow user to pick an image from Gallery or other
-                    // registered apps
-                    val intent = Intent(Intent.ACTION_GET_CONTENT)
-                    intent.type = "image/*"
-                    startActivityForResult(intent, CHOOSE_FILE_RESULT_CODE)
+                    // registered app
+                    send()
                 }
             })
         return mContentView
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-        // User has picked an image. Transfer it to group owner i.e peer using
-        // FileTransferService.
-        val uri = data.data
+        if (requestCode == 1 && resultCode == AppCompatActivity.RESULT_OK && data != null) {
+            // Récupérez le résultat de l'activité enfant
+            val resultat = data.getIntExtra("input", 0)
+            score+=resultat
+            compteur++
+            if (info?.groupFormed == true && info?.isGroupOwner == false && compteur==3) {
+                sendScore()
+            }
+            // Utilisez le résultat ici
+        }
+    }
+    fun loachgame(list : ArrayList<Int>){
+        var minijeux = ArrayList<Class<*>>()
+        minijeux.add(TapTaupe::class.java)
+        minijeux.add(Quizz::class.java)
+        minijeux.add(QuizzSound::class.java)
+
+        for(i in list) {
+            startActivityForResult(Intent(activity,minijeux.get(i)), 1)
+        }
+
+    }
+
+
+    fun win(score : Int){
+        val serviceIntent = Intent(activity, WinLoose::class.java)
+        serviceIntent.putExtra("win",score)
+        activity.startActivity(serviceIntent)
+    }
+    fun sendScore(){
+
         val statusText = mContentView!!.findViewById<View>(R.id.status_text) as TextView
-        statusText.text = "Sending: $uri"
-        Log.d(WifiDirectActivity.TAG, "Intent----------- $uri")
+
         val serviceIntent = Intent(activity, FileTransferService::class.java)
+
         serviceIntent.action = FileTransferService.ACTION_SEND_FILE
-        serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString())
+
         serviceIntent.putExtra(
             FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
             info!!.groupOwnerAddress.hostAddress
         )
+        serviceIntent.putExtra("score",true)
+        serviceIntent.putExtra("point",score)
         serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988)
         activity.startService(serviceIntent)
     }
+    fun send(){
+
+        val serviceIntent = Intent(activity, FileTransferService::class.java)
+        serviceIntent.action = FileTransferService.ACTION_SEND_FILE
+        serviceIntent.putExtra("score",false)
+        serviceIntent.putExtra(
+            FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
+            info!!.groupOwnerAddress.hostAddress
+        )
+        val random = Random()
+        val numbers = ArrayList<Int>()
+
+        while (numbers.size < 3) {
+            numbers.add(random.nextInt(3))
+        }
+        serviceIntent.putExtra("jeu",numbers)
+        serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988)
+        activity.startService(serviceIntent)
+
+        this.loachgame(numbers)
+    }
 
     override fun onConnectionInfoAvailable(info: WifiP2pInfo) {
+
         if (progressDialog != null && progressDialog!!.isShowing) {
             progressDialog!!.dismiss()
         }
@@ -122,7 +181,7 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
         // server. The file server is single threaded, single connection server
         // socket.
         if (info.groupFormed && info.isGroupOwner) {
-            FileServerAsyncTask(activity, mContentView!!.findViewById(R.id.status_text))
+            FileServerAsyncTask(activity, mContentView!!.findViewById(R.id.status_text),this)
                 .execute()
         } else if (info.groupFormed) {
             // The other device acts as the client. In this case, we enable the
@@ -173,16 +232,20 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
      * A simple server socket that accepts connection and writes some data on
      * the stream.
      */
-    class FileServerAsyncTask(private val context: Context, statusText: View) :
+    class FileServerAsyncTask(private val context: Context, statusText: View, fragment: DeviceDetailFragment) :
         AsyncTask<Void?, Void?, String?>() {
         private val statusText: TextView
-
+        private val fragment: DeviceDetailFragment
+        private val game : ArrayList<Int>
         /**
          * @param context
          * @param statusText
          */
         init {
             this.statusText = statusText as TextView
+            this.fragment=fragment
+            this.game=ArrayList<Int>(3)
+
         }
 
         protected override fun doInBackground(vararg params: Void?): String? {
@@ -200,10 +263,16 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
                 if (!dirs.exists()) dirs.mkdirs()
                 f.createNewFile()
                 Log.d(WifiDirectActivity.TAG, "server: copying files $f")
-                val inputstream = client.getInputStream()
-                copyFile(inputstream, FileOutputStream(f))
+
+                val inputstream = DataInputStream(client.getInputStream())
+
+                for (i in 0..2) {
+                    game.add(inputstream.readInt()) // lire chaque élément du tableau
+                    System.out.println(game.get(i))
+                }
+
                 serverSocket.close()
-                return f.absolutePath
+                return "true"
             } catch (e: IOException) {
                 Log.e(WifiDirectActivity.TAG, (e.message)!!)
                 return null
@@ -217,17 +286,88 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
         override fun onPostExecute(result: String?) {
             if (result != null) {
                 statusText.text = "File copied - $result"
-                val recvFile = File(result)
-                val fileUri = FileProvider.getUriForFile(
-                    context,
-                    "fr.esir.progm.wifidirectdemo.fileprovider",
-                    recvFile
-                )
+
                 val intent = Intent()
                 intent.action = Intent.ACTION_VIEW
-                intent.setDataAndType(fileUri, "image/*")
+
                 intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                context.startActivity(intent)
+                ScoreServerAsyncTask(context, this.statusText ,this.fragment)
+                    .execute()
+                this.fragment.loachgame(this.game)
+
+            }
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see android.os.AsyncTask#onPreExecute()
+         */
+        override fun onPreExecute() {
+            statusText.text = "Opening a server socket"
+        }
+    }
+
+    /**
+     * A simple server socket that accepts connection and writes some data on
+     * the stream.
+     */
+    class ScoreServerAsyncTask(private val context: Context, statusText: View, fragment: DeviceDetailFragment) :
+        AsyncTask<Void?, Void?, String?>() {
+        private val statusText: TextView
+        private val fragment: DeviceDetailFragment
+        private var game : Int
+        /**
+         * @param context
+         * @param statusText
+         */
+        init {
+            this.statusText = statusText as TextView
+            this.fragment=fragment
+            this.game=-1
+
+        }
+
+        protected override fun doInBackground(vararg params: Void?): String? {
+            try {
+                val serverSocket = ServerSocket(8988)
+                Log.d(WifiDirectActivity.TAG, "Server: Socket opened")
+                val client = serverSocket.accept()
+                Log.d(WifiDirectActivity.TAG, "Server: connection done")
+
+
+                val stream = DataOutputStream(client.getOutputStream())
+                val inputstream = DataInputStream(client.getInputStream())
+                val scoreAdv = inputstream.readInt()
+                var gagne=1
+                if(scoreAdv<this.fragment.score){
+                    gagne=-1
+                    game=1
+                }else if(scoreAdv==this.fragment.score){
+                    gagne=0
+                    game=0
+                }
+                stream.writeInt(gagne)
+                serverSocket.close()
+                return "true"
+            } catch (e: IOException) {
+                Log.e(WifiDirectActivity.TAG, (e.message)!!)
+                return null
+            }
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
+        override fun onPostExecute(result: String?) {
+            if (result != null) {
+                statusText.text = "File copied - $result"
+
+                val intent = Intent()
+                intent.action = Intent.ACTION_VIEW
+
+                intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                this.fragment.win(game)
             }
         }
 

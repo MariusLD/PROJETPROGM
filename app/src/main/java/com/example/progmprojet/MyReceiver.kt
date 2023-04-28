@@ -60,17 +60,25 @@ class MyReceiver
                 )
             }
             Log.d(WifiDirectActivity.TAG, "P2P peers changed")
-        } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION == action) {
+        } /*else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION == action) {
 
             // Connection state changed! We should probably do something about
             // that.
-        } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION == action) {
+        } */else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION == action) {
+            System.out.println("CONNECT INFO3")
             if (manager == null) {
+                System.out.println("CONNECT INFO86515641")
                 return
             }
             val networkInfo = intent
                 .getParcelableExtra<Parcelable>(WifiP2pManager.EXTRA_NETWORK_INFO) as NetworkInfo?
+            System.out.println("CONNECT INFO2")
+            System.out.println(networkInfo)
+            if (networkInfo != null) {
+                System.out.println(networkInfo.isConnected)
+            }
             if (networkInfo != null && networkInfo.isConnected) {
+                System.out.println("CONNECT INFO")
                 // we are connected with the other device, request connection
                 // info to find group owner IP
                 val fragment = activity
@@ -79,6 +87,12 @@ class MyReceiver
             } else {
                 // It's a disconnect
                 activity.resetData()
+            }
+        }else if ("com.example.progmprojet.ACTION_ENVOI_JEUX" == action){
+            val jeu1 = intent?.getIntExtra("win",-5)
+            System.out.println("JEU")
+            if (jeu1 != null) {
+                activity.win(jeu1)
             }
         }
     }

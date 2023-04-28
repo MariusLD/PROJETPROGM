@@ -52,7 +52,7 @@ class QuizzSound : AppCompatActivity() {
                 }
             }
             val main : Intent =  Intent(this,MainActivity::class.java)
-            main.putExtra("input",""+score)
+            main.putExtra("input",score)
             setResult(RESULT_OK,main)
             finish()
         }

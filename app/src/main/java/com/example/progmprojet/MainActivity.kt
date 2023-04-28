@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
         minijeux= minijeux.shuffled() as ArrayList<Class<*>>
         val quizz : Intent =  Intent(this,TapTaupe::class.java)
         val button: Button = findViewById(R.id.button)
+        val multi: Button = findViewById(R.id.button2)
 
         var getResult =
             registerForActivityResult(
@@ -40,6 +41,10 @@ class MainActivity : AppCompatActivity() {
             for(i in 0..2) {
                 getResult.launch(Intent(this,minijeux.get(i)))
             }
+        }
+
+        multi.setOnClickListener{
+            getResult.launch(Intent(this,WifiDirectActivity::class.java))
         }
     }
 }

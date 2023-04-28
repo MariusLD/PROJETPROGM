@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path
+        name="external_files"
+        path="." />
+    <!-- Ajoutez d'autres chemins d'accès pour d'autres emplacements de fichiers si nécessaire -->
+</paths>

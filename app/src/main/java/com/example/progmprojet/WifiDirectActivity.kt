@@ -1,6 +1,7 @@
 package com.example.progmprojet
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
@@ -17,6 +18,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.progmprojet.DeviceListFragment.DeviceActionListener
@@ -28,6 +31,8 @@ class WifiDirectActivity : AppCompatActivity(), ChannelListener, DeviceActionLis
     var channel: WifiP2pManager.Channel? = null
     var manager: WifiP2pManager? = null
     private var receiver: MyReceiver? = null
+    private var getResult: ActivityResultLauncher<Intent>? = null
+    private var score=0
 
     /**
      * @param isWifiP2pEnabled the isWifiP2pEnabled to set
@@ -95,6 +100,7 @@ class WifiDirectActivity : AppCompatActivity(), ChannelListener, DeviceActionLis
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)
         // Indicates this device's details have changed.
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
+        intentFilter.addAction("com.example.progmprojet.ACTION_ENVOI_JEUX")
         if (!initP2p()) {
             finish()
         }
@@ -108,6 +114,16 @@ class WifiDirectActivity : AppCompatActivity(), ChannelListener, DeviceActionLis
             )
             // After this point you wait for callback in
             // onRequestPermissionsResult(int, String[], int[]) overridden method
+        }
+        getResult = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val value = result.data?.getIntExtra("input",0)
+                if (value != null) {
+                    score+=value
+                }
+            }
         }
     }
 
@@ -132,10 +148,16 @@ class WifiDirectActivity : AppCompatActivity(), ChannelListener, DeviceActionLis
             .findFragmentById(R.id.frag_list) as DeviceListFragment
         val fragmentDetails = fragmentManager
             .findFragmentById(R.id.frag_detail) as DeviceDetailFragment
+
         fragmentList?.clearPeers()
         fragmentDetails?.resetViews()
     }
 
+    fun win(score :Int){
+        val fragmentDetails = fragmentManager
+            .findFragmentById(R.id.frag_detail) as DeviceDetailFragment
+        fragmentDetails.win(score)
+    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.action_items, menu)
@@ -214,7 +236,7 @@ class WifiDirectActivity : AppCompatActivity(), ChannelListener, DeviceActionLis
         }
         manager!!.connect(channel, config, object : WifiP2pManager.ActionListener {
             override fun onSuccess() {
-                // WiFiDirectBroadcastReceiver will notify us. Ignore for now.
+                // WiFiDirectBroadcastReceiver will notify us. Ignore for now
             }
 
             override fun onFailure(reason: Int) {
