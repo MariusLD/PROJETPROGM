@@ -2,6 +2,8 @@ package com.example.progmprojet
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Rect
+import android.graphics.RectF
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -23,7 +25,7 @@ class SnakeWithoutSnake : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_snake_without_snake)
         val score = findViewById<TextView>(R.id.score)
-        val map = findViewById<RelativeLayout>(R.id.board)
+        val board = findViewById<RelativeLayout>(R.id.board)
         val food = ImageView(this)
         val pig = ImageView(this)
         val tracking = mutableListOf(pig)
@@ -32,11 +34,15 @@ class SnakeWithoutSnake : AppCompatActivity() {
         var handler = Handler()
         pig.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.pig))
         pig.layoutParams = ViewGroup.LayoutParams(
-            100,
-            100
+            40,
+            40
         )
-        map.addView(pig)
-        tracking.add(pig)
+        val centerX = board.width / 2 - pig.width / 2
+        val centerY = board.height / 2 - pig.height / 2
+        pig.translationX = centerX.toFloat()
+        pig.translationY = centerY.toFloat()
+
+        board.addView(pig)
         var snakeX = pig.x
         var snakeY = pig.y
 
@@ -45,7 +51,7 @@ class SnakeWithoutSnake : AppCompatActivity() {
             100,
             100
         )
-        map.addView(food)
+        board.addView(food)
         val random = Random()
         val randomX = random.nextInt(801) - 400
         val randomY = random.nextInt(801) - 400
@@ -53,7 +59,7 @@ class SnakeWithoutSnake : AppCompatActivity() {
         food.y = randomY.toFloat()
 
         fun checkFoodCollision() {
-            val distanceThreshold = 50
+            val distanceThreshold = 100
 
             val distance = sqrt((pig.x - food.x).pow(2) + (pig.y - food.y).pow(2))
 
@@ -63,13 +69,13 @@ class SnakeWithoutSnake : AppCompatActivity() {
                 val newPig = ImageView(this)
                 newPig.setImageResource(R.drawable.pig)
                 newPig.layoutParams = ViewGroup.LayoutParams(
-                    100,
-                    100
+                    40,
+                    40
                 )
-                map.addView(newPig)
+                board.addView(newPig)
                 tracking.add(newPig)
 
-                // On génère alors une nouvelle pomme
+                // We generate a new apple
                 val randomX = random.nextInt(801) - 100
                 val randomY = random.nextInt(801) - 100
                 food.x = randomX.toFloat()
@@ -81,61 +87,103 @@ class SnakeWithoutSnake : AppCompatActivity() {
             }
         }
 
+        // Function to end the game when the snake hits the wall or itself
+        fun endGame() {
+            var scoreInt: Int = score.text.toString().toInt()
+            scoreInt=0
+            score.text = scoreInt.toString()
+            // We delete the snake body, the traking list if it has body parts
+            if (tracking.size > 1) {
+                for (i in tracking.size - 1  downTo 1) {
+                    board.removeView(tracking[i])
+                    tracking.removeAt(i)
+                }
+            }
+        }
+
+        // Method to detect collision with the snake body
+        fun checkSnakeCollision() {
+            val snakeHead = tracking[0]
+            val snakeHeadRect = RectF(snakeHead.x, snakeHead.y, snakeHead.x + snakeHead.width, snakeHead.y + snakeHead.height)
+            if (tracking.size > 1) {
+                for (i in 1 until tracking.size-1) {
+                    val snakeBodyPart = tracking[i]
+                    val snakeBodyPartRect = RectF(snakeBodyPart.x, snakeBodyPart.y, snakeBodyPart.x + snakeBodyPart.width, snakeBodyPart.y + snakeBodyPart.height)
+                    if (snakeHeadRect.intersect(snakeBodyPartRect)) {
+                        endGame()
+                    }
+                }
+            }
+        }
+
+
         val runnable = object : Runnable {
             override fun run() {
-                // On update la position du corps, sauf la tête évidemment
+
+                // We update the body position with some space in-between, except its head
                 for (i in tracking.size - 1 downTo 1) {
-                    tracking[i].x = tracking[i - 1].x
-                    tracking[i].y = tracking[i - 1].y
+                    val bodyPart = tracking[i]
+                    val previousBodyPart = tracking[i - 1]
+                    bodyPart.x = previousBodyPart.x
+                    bodyPart.y = previousBodyPart.y
                 }
 
+                val translateValue = 40
+                val boardHeightLimit = board.height/2
+                val boardWidthLimit = board.width/2
+
+                // Use the map limits in your code
                 when (currentDirection) {
                     "up" -> {
-                        snakeY -= 10
-                        if (snakeY > map.top) {
-                            snakeY = map.top.toFloat()
-                            currentDirection = "pause"
-                            println("Game Over")
-                        }
+                        snakeY -= translateValue
                         pig.translationY = snakeY
+                        if (snakeY < -boardHeightLimit) {
+                            snakeX = (centerX/2).toFloat()
+                            snakeY = (centerY/2).toFloat()
+                            pig.translationX = snakeX
+                            pig.translationY = snakeY
+                            endGame()
+                        }
+
                     }
                     "down" -> {
-                        snakeY += 10
-                        println(snakeX)
-                        if (snakeY < map.bottom) {
-                            snakeY = map.bottom.toFloat()
-                            currentDirection = "pause"
-                            println("Game Over")
-                        }
+                        snakeY += translateValue
                         pig.translationY = snakeY
-                    }
-                    //Quand on penche le portable à droite, il va à gauche, et snakeX va dans les négatifs
-                    "left" -> {
-                        snakeX -= 10
-                        println(snakeX)
-                        if (snakeX > map.right) {
-                            snakeX = map.right.toFloat()
-                            currentDirection = "pause"
-                            println("Game Over")
+                        if (snakeY > boardHeightLimit) {
+                            snakeX = (centerX/2).toFloat()
+                            snakeY = (centerY/2).toFloat()
+                            pig.translationX = snakeX
+                            pig.translationY = snakeY
+                            endGame()
                         }
+
+                    }
+                    "left" -> {
+                        snakeX += translateValue
                         pig.translationX = snakeX
+                        if (snakeX > boardWidthLimit) {
+                            snakeX = (centerX/2).toFloat()
+                            snakeY = (centerY/2).toFloat()
+                            pig.translationX = snakeX
+                            pig.translationY = snakeY
+                            endGame()
+                        }
+
                     }
                     "right" -> {
-                        snakeX += 10
-                        if (snakeX < map.left) {
-                            snakeX = map.left.toFloat()
-                            currentDirection = "pause"
-                            println("Game Over")
+                        snakeX -= translateValue
+                        pig.translationX = snakeX
+                        if (snakeX < -boardWidthLimit) {
+                            snakeX = (centerX/2).toFloat()
+                            snakeY = (centerY/2).toFloat()
+                            pig.translationX = snakeX
+                            pig.translationY = snakeY
+                            endGame()
                         }
-                        pig.translationX = snakeX
-                    }
-
-                    "pause" -> {
-                        snakeX += 0
-                        pig.translationX = snakeX
                     }
                 }
                 checkFoodCollision()
+                checkSnakeCollision()
                 handler.postDelayed(this, delayMillis.toLong())
             }
         }
