@@ -51,6 +51,7 @@ class QuizzSound : AppCompatActivity() {
                     score= score +1
                 }
             }
+
             val main : Intent =  Intent(this,MainActivity::class.java)
             main.putExtra("input",score)
             setResult(RESULT_OK,main)

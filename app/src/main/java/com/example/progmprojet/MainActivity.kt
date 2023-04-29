@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         minijeux.add(PieGame::class.java)
         minijeux.add(CutBle::class.java)
         minijeux= minijeux.shuffled() as ArrayList<Class<*>>
-        val quizz : Intent =  Intent(this,TapTaupe::class.java)
+        val quizz : Intent =  Intent(this,QuizzSound::class.java)
         val button: Button = findViewById(R.id.button)
         val leaderboard: Button = findViewById(R.id.leaderboard)
         val multi: Button = findViewById(R.id.button2)
@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
             for(i in 0..2) {
                 getResult.launch(Intent(this,minijeux.get(i)))
             }
+            //getResult.launch(quizz)
         }
 
         leaderboard.setOnClickListener{
