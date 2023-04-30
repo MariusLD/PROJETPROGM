@@ -148,19 +148,19 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
             info!!.groupOwnerAddress.hostAddress
         )
         val random = Random()
-        val numbers = ArrayList<Int>()
-
-        while (numbers.size < 3) {
+        val set = mutableSetOf<Int>()
+        while (set.size < 3) {
             val rt=random.nextInt(5)
-            numbers.add(rt)
+            set.add(rt)
         }
+        val numbers = set.toList()
         serviceIntent.putExtra("jeu1", numbers[0])
         serviceIntent.putExtra("jeu2", numbers[1])
         serviceIntent.putExtra("jeu3", numbers[2])
         serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988)
         activity.startService(serviceIntent)
 
-        this.loachgame(numbers)
+        this.loachgame(numbers as ArrayList<Int>)
     }
 
     override fun onConnectionInfoAvailable(info: WifiP2pInfo) {

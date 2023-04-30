@@ -1,7 +1,9 @@
 package com.example.progmprojet
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 
 class WinLoose : AppCompatActivity() {
@@ -21,5 +23,20 @@ class WinLoose : AppCompatActivity() {
         }
         val textView : TextView =findViewById(R.id.textViewWinLoose)
         textView.setText(texte)
+
+        val button: Button = findViewById(R.id.buttonMenu)
+
+        button.setOnClickListener{
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        val play: Button = findViewById(R.id.buttonRejouer)
+        play.setOnClickListener{
+            val intent = Intent(this, WifiDirectActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 }
