@@ -42,7 +42,7 @@ class PieGame : AppCompatActivity() {
             override fun onSensorChanged(event: SensorEvent?) {
                 var values = event?.values
                 var y = values?.get(1)
-                    if (y!! >= 2) {
+                    if (y!! >= 50) {
                         incr += 1
                         mp.start();
                     }
@@ -70,6 +70,7 @@ class PieGame : AppCompatActivity() {
                 setResult(RESULT_OK,main)
                 val dbScoreRef = dbRef.child(getMacAddr())
                 dbScoreRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    System.out.println("onDataChange")
                     // We check if the score is better than the previous one and we update it if so
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val currentScore = snapshot.getValue(Int::class.java)
