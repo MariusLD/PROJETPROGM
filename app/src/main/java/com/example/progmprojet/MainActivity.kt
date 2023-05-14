@@ -87,6 +87,7 @@ class MainActivity : AppCompatActivity() {
         entrainement.setOnClickListener{
             // Start Activity Leaderboard
             val intent = Intent(this, Entrainement::class.java)
+            intent.putExtra("user", user)
             startActivity(intent)
         }
 
@@ -98,9 +99,6 @@ class MainActivity : AppCompatActivity() {
 
         profile.setOnClickListener{
             val profileIntent = Intent(this, Profile::class.java)
-            if (!user.isEmpty()) {
-                profileIntent.putExtra("user", user)
-            }
             startActivityForResult(profileIntent, REQUEST_CODE_PROFILE)
         }
     }
