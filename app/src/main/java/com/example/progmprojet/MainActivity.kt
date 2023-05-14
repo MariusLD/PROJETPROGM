@@ -50,8 +50,15 @@ class MainActivity : AppCompatActivity() {
             }
 
         button.setOnClickListener{
+            val random = java.util.Random()
+            val set = mutableSetOf<Int>()
+            while (set.size < 3) {
+                val rt=random.nextInt(5)
+                set.add(rt)
+            }
+            val numbers = set.toList()
             for(i in 0..2) {
-                val gameIntent = Intent(this, minijeux.get(i))
+                val gameIntent = Intent(this, minijeux.get(numbers.get(i)))
                 gameIntent.putExtra("user", user)
                 getResult.launch(Intent(gameIntent))
             }

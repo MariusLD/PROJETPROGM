@@ -79,7 +79,7 @@ class CustomListAdapterSound(private val context: Context, private val question:
         mediaPlayer.setOnCompletionListener {
             // Le MediaPlayer a terminé de jouer le fichier audio
             ecouter.text = "ECOUTER"
-            joue=true
+            joue=false
 
         }
         ecouter.setOnClickListener{
@@ -96,6 +96,7 @@ class CustomListAdapterSound(private val context: Context, private val question:
                 }
                 mediaPlayer.start()
                 ecouter.text = "STOP"
+                joue=false
 
             }
         }
