@@ -8,6 +8,7 @@ import android.widget.AdapterView
 import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 
 import kotlin.collections.ArrayList
@@ -20,11 +21,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     var user : String = ""
-
+    var getResult : ActivityResultLauncher<Intent>? =null
+    var minijeux = ArrayList<Class<*>>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        var minijeux = ArrayList<Class<*>>()
         minijeux.add(TapTaupe::class.java)
         minijeux.add(Quizz::class.java)
         minijeux.add(QuizzSound::class.java)
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         val multi: Button = findViewById(R.id.button2)
         val profile : Button = findViewById(R.id.profile)
         var i=0
-        var getResult =
+         this.getResult =
             registerForActivityResult(
                 ActivityResultContracts.StartActivityForResult()
             ) {
@@ -52,27 +53,20 @@ class MainActivity : AppCompatActivity() {
                             serviceIntent.putExtra("win",10)
                             //serviceIntent.putExtra("activity",this)
                             serviceIntent.putExtra("score",this.score)
-                            this.startActivity(serviceIntent)
+                            //this.startActivity(serviceIntent)
+                            getResult?.launch(Intent(serviceIntent))
                             i=0
                         }
+                    }
+                    val rejoue = it.data?.getIntExtra("rejouer",0)
+                    if(rejoue!=0){
+                        joue()
                     }
                 }
             }
 
         button.setOnClickListener{
-            val random = java.util.Random()
-            val set = mutableSetOf<Int>()
-            while (set.size < 3) {
-                val rt=random.nextInt(5)
-                set.add(rt)
-            }
-            val numbers = set.toList()
-            for(i in 0..2) {
-                val gameIntent = Intent(this, minijeux.get(numbers.get(i)))
-                gameIntent.putExtra("user", user)
-                getResult.launch(Intent(gameIntent))
-            }
-
+            joue()
             //getResult.launch(quizz)
         }
 
@@ -85,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         multi.setOnClickListener{
             val gameIntent = Intent(this, WifiDirectActivity::class.java)
             gameIntent.putExtra("user", user)
-            getResult.launch(Intent(gameIntent))
+            getResult?.launch(Intent(gameIntent))
         }
 
         profile.setOnClickListener{
@@ -97,6 +91,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun joue(){
+        val random = java.util.Random()
+        val set = mutableSetOf<Int>()
+        while (set.size < 3) {
+            val rt=random.nextInt(5)
+            set.add(rt)
+        }
+        val numbers = set.toList()
+        for(i in 0..2) {
+            val gameIntent = Intent(this, minijeux.get(numbers.get(i)))
+            gameIntent.putExtra("user", user)
+            getResult?.launch(Intent(gameIntent))
+        }
+    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_PROFILE && resultCode == Activity.RESULT_OK && data != null) {

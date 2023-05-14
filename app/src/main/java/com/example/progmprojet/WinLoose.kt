@@ -43,10 +43,18 @@ class WinLoose : AppCompatActivity() {
 
         val play: Button = findViewById(R.id.buttonRejouer)
         play.setOnClickListener{
-            val intent = Intent(this, WifiDirectActivity::class.java)
-            startActivity(intent)
-            mediaPlayer.stop()
-            finish()
+            if(extraValue==10){
+                val main : Intent =  Intent(this,MainActivity::class.java)
+                main.putExtra("rejouer",1)
+                setResult(RESULT_OK,main)
+                mediaPlayer.stop()
+                finish()
+            }else{
+                val intent = Intent(this, WifiDirectActivity::class.java)
+                startActivity(intent)
+                mediaPlayer.stop()
+                finish()
+            }
         }
     }
 }
