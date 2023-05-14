@@ -1,6 +1,7 @@
 package com.example.progmprojet
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -108,9 +109,11 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_PROFILE && resultCode == Activity.RESULT_OK && data != null) {
-            val name = data.getStringExtra("name")
-            user = name.toString()
-            Toast.makeText(this, "Bienvenue $name", Toast.LENGTH_SHORT).show()
+            val sharedPref = getSharedPreferences("mySharedPreferences", Context.MODE_PRIVATE)
+            user = sharedPref.getString("username", null).toString()
+            if (user != "") {
+                Toast.makeText(this, "Bienvenue $user", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
