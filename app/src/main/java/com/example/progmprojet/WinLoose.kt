@@ -1,6 +1,7 @@
 package com.example.progmprojet
 
 import android.content.Intent
+import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -13,8 +14,9 @@ class WinLoose : AppCompatActivity() {
 
         val intent = getIntent()
         val extraValue = intent.getIntExtra("win",-5)
+        val score = intent.getIntExtra("score",-5)
         var texte:String=""
-        if(extraValue==1){
+        if(extraValue==1 ||extraValue==10){
             texte="Vous avez Gagné"
         }else if(extraValue==0){
             texte="Egaliter"
@@ -24,11 +26,18 @@ class WinLoose : AppCompatActivity() {
         val textView : TextView =findViewById(R.id.textViewWinLoose)
         textView.setText(texte)
 
+        val textScore : TextView =findViewById(R.id.textScore)
+        textScore.setText("Vous avez:"+score+" points !")
         val button: Button = findViewById(R.id.buttonMenu)
-
+        var mediaPlayer = MediaPlayer.create(this, R.raw.loose)
+        if(extraValue >-1){
+            mediaPlayer = MediaPlayer.create(this, R.raw.win)
+        }
+        mediaPlayer.start()
         button.setOnClickListener{
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+            mediaPlayer.stop()
             finish()
         }
 
@@ -36,6 +45,7 @@ class WinLoose : AppCompatActivity() {
         play.setOnClickListener{
             val intent = Intent(this, WifiDirectActivity::class.java)
             startActivity(intent)
+            mediaPlayer.stop()
             finish()
         }
     }

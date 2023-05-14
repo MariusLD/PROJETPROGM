@@ -119,7 +119,9 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
     fun win(score : Int){
         val serviceIntent = Intent(activity, WinLoose::class.java)
         serviceIntent.putExtra("win",score)
+        serviceIntent.putExtra("score",this.score)
         activity.startActivity(serviceIntent)
+        this.score=0
     }
     fun sendScore(){
 

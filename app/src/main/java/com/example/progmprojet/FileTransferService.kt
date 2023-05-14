@@ -55,6 +55,7 @@ class FileTransferService : IntentService {
                         var gagne=inputstream.readInt()
                         val intent = Intent("com.example.progmprojet.ACTION_ENVOI_JEUX")
                         intent.putExtra("win", gagne)
+                        //intent.putExtra("score", point)
                         sendBroadcast(intent)
                     }else {
                         if (jeu != null) {

@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         val leaderboard: Button = findViewById(R.id.leaderboard)
         val multi: Button = findViewById(R.id.button2)
         val profile : Button = findViewById(R.id.profile)
-
+        var i=0
         var getResult =
             registerForActivityResult(
                 ActivityResultContracts.StartActivityForResult()
@@ -45,6 +45,15 @@ class MainActivity : AppCompatActivity() {
                     val value = it.data?.getIntExtra("input",0)
                     if (value != null) {
                         score += value
+                        i++
+                        if(i==3){
+                            val serviceIntent = Intent(this, WinLoose::class.java)
+                            serviceIntent.putExtra("win",10)
+                            //serviceIntent.putExtra("activity",this)
+                            serviceIntent.putExtra("score",this.score)
+                            this.startActivity(serviceIntent)
+                            i=0
+                        }
                     }
                 }
             }
@@ -62,6 +71,7 @@ class MainActivity : AppCompatActivity() {
                 gameIntent.putExtra("user", user)
                 getResult.launch(Intent(gameIntent))
             }
+
             //getResult.launch(quizz)
         }
 

@@ -90,7 +90,6 @@ class MyReceiver
             }
         }else if ("com.example.progmprojet.ACTION_ENVOI_JEUX" == action){
             val jeu1 = intent?.getIntExtra("win",-5)
-            System.out.println("JEU")
             if (jeu1 != null) {
                 activity.win(jeu1)
             }
