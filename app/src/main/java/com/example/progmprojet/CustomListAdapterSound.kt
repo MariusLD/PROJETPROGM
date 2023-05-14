@@ -23,6 +23,7 @@ class CustomListAdapterSound(private val context: Context, private val question:
     }
 
     override fun getView(pos: Int, p1: View?, p2: ViewGroup?): View {
+        System.out.println("POS"+pos)
         var view =p1
         if(view == null){
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater

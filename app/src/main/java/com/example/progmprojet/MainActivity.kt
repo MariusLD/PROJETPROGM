@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         val random = java.util.Random()
         val set = mutableSetOf<Int>()
         while (set.size < 3) {
-            val rt=random.nextInt(5)
+            val rt=random.nextInt(6)
             set.add(rt)
         }
         val numbers = set.toList()

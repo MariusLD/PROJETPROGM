@@ -90,13 +90,18 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 1 && resultCode == AppCompatActivity.RESULT_OK && data != null) {
+        if ( resultCode == AppCompatActivity.RESULT_OK && data != null) {
             // Récupérez le résultat de l'activité enfant
-            val resultat = data.getIntExtra("input", 0)
-            score+=resultat
-            compteur++
+            val resultat = data.getIntExtra("input", -5)
+            if(resultat!=-5){
+                score+=resultat
+                System.out.println("SCORE :"+score)
+                compteur++
+            }
+
             if (info?.groupFormed == true && info?.isGroupOwner == false && compteur==3) {
                 sendScore()
+                compteur=0
             }
             // Utilisez le résultat ici
         }
@@ -108,7 +113,7 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
         minijeux.add(QuizzSound::class.java)
         minijeux.add(PieGame::class.java)
         minijeux.add(CutBle::class.java)
-
+        minijeux.add(SnakeWithoutSnake::class.java)
         for(i in list) {
             startActivityForResult(Intent(activity,minijeux.get(i)), 1)
         }
@@ -139,6 +144,7 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
         serviceIntent.putExtra("point",score)
         serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988)
         activity.startService(serviceIntent)
+        //this.score=0
     }
     fun send(){
 
@@ -152,7 +158,7 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
         val random = Random()
         val set = mutableSetOf<Int>()
         while (set.size < 3) {
-            val rt=random.nextInt(5)
+            val rt=random.nextInt(6)
             set.add(rt)
         }
         val numbers = set.toList()
