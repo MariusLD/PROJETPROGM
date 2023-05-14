@@ -3,6 +3,7 @@ package com.example.progmprojet
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.AdapterView
@@ -27,6 +28,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val sharedPref = getSharedPreferences("mySharedPreferences", Context.MODE_PRIVATE)
+        var collectedName = sharedPref.getString("username", null).toString()
+        if (collectedName != "") {
+            user = collectedName
+        }
         minijeux.add(TapTaupe::class.java)
         minijeux.add(Quizz::class.java)
         minijeux.add(QuizzSound::class.java)
