@@ -2,6 +2,7 @@ package com.example.progmprojet
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Rect
 import android.graphics.RectF
 import android.hardware.Sensor
@@ -10,20 +11,30 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 class SnakeWithoutSnake : AppCompatActivity() {
+
+    var name = ""
+    private var countDownTimer: CountDownTimer? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_snake_without_snake)
+        var dbRef = FirebaseDatabase.getInstance().getReference("HungryPig")
+        name = intent.getStringExtra("user").toString()
         val score = findViewById<TextView>(R.id.score)
         val board = findViewById<RelativeLayout>(R.id.board)
         val food = ImageView(this)
@@ -212,5 +223,37 @@ class SnakeWithoutSnake : AppCompatActivity() {
             }
         }
         sm.registerListener(se, mySensor, SensorManager.SENSOR_DELAY_NORMAL)
+
+        countDownTimer = object : CountDownTimer(30000, 1000) { // 30 seconds timer
+            override fun onTick(millisUntilFinished: Long) {
+            }
+
+            override fun onFinish() {
+                val main : Intent =  Intent(this@SnakeWithoutSnake,MainActivity::class.java)
+                val scoreInt : Int = score.text.toString().toInt()
+                main.putExtra("input",scoreInt)
+                setResult(RESULT_OK,main)
+
+                if (name.isEmpty()) {
+                    finish()
+                    return
+                } else {
+                    // We get the score from the database
+                    dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            val currentScore = snapshot.child(name).getValue(Int::class.java)
+                            if (currentScore == null || scoreInt > currentScore) {
+                                dbRef.child(name).setValue(scoreInt)
+                            }
+                            finish()
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                            finish()
+                        }
+                    })
+                }
+            }
+        }
+        countDownTimer?.start()
     }
 }

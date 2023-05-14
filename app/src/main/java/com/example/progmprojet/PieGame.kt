@@ -63,7 +63,10 @@ class PieGame : AppCompatActivity() {
                 val scoreInt : Int = score.text.toString().toInt()
                 main.putExtra("input",scoreInt)
                 setResult(RESULT_OK,main)
-
+                if (mp.isPlaying) {
+                    mp.stop();
+                    mp.release()
+                }
                 if (name.isEmpty()) {
                     finish()
                     return
