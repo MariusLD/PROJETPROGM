@@ -20,18 +20,13 @@ import com.google.firebase.database.ValueEventListener
 
 class PieGame : AppCompatActivity() {
 
-    // Getting mac address from mobile
-    private fun getMacAddr() : String {
-        val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
-        val wifiInfo = wifiManager.connectionInfo
-        val macAddress = wifiInfo.macAddress
-        return macAddress
-    }
+    var name = ""
 
     private var countDownTimer: CountDownTimer? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pie_game)
+        name = intent.getStringExtra("user").toString()
         var dbRef = FirebaseDatabase.getInstance().getReference("PieGame")
         val mp: MediaPlayer = MediaPlayer.create(this, R.raw.cow)
         var incr = 0
@@ -68,21 +63,25 @@ class PieGame : AppCompatActivity() {
                 val scoreInt : Int = score.text.toString().toInt()
                 main.putExtra("input",scoreInt)
                 setResult(RESULT_OK,main)
-                val dbScoreRef = dbRef.child(getMacAddr())
-                dbScoreRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                    System.out.println("onDataChange")
-                    // We check if the score is better than the previous one and we update it if so
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        val currentScore = snapshot.getValue(Int::class.java)
-                        if (currentScore == null || scoreInt > currentScore) {
-                            dbScoreRef.setValue(scoreInt)
+
+                if (name.isEmpty()) {
+                    finish()
+                    return
+                } else {
+                    // We get the score from the database
+                    dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            val currentScore = snapshot.child(name).getValue(Int::class.java)
+                            if (currentScore == null || scoreInt > currentScore) {
+                                dbRef.child(name).setValue(scoreInt)
+                            }
+                            finish()
                         }
-                        finish()
-                    }
-                    override fun onCancelled(error: DatabaseError) {
-                        finish()
-                    }
-                })
+                        override fun onCancelled(error: DatabaseError) {
+                            finish()
+                        }
+                    })
+                }
             }
         }
         countDownTimer?.start()

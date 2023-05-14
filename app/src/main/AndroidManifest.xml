@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- Google Play filtering -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Google Play filtering -->
     <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" />
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
 
@@ -28,6 +29,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WifiDirectDemo"
         tools:targetApi="31">
+        <activity
+            android:name=".Profile"
+            android:exported="false" />
         <activity
             android:name=".WinLoose"
             android:exported="false" />
