@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         minijeux= minijeux.shuffled() as ArrayList<Class<*>>
         val quizz : Intent =  Intent(this,QuizzSound::class.java)
         val button: Button = findViewById(R.id.button)
+        val entrainement: Button = findViewById(R.id.button3)
         val leaderboard: Button = findViewById(R.id.leaderboard)
         val multi: Button = findViewById(R.id.button2)
         val profile : Button = findViewById(R.id.profile)
@@ -80,6 +81,12 @@ class MainActivity : AppCompatActivity() {
         leaderboard.setOnClickListener{
             // Start Activity Leaderboard
             val intent = Intent(this, Leaderboard::class.java)
+            startActivity(intent)
+        }
+
+        entrainement.setOnClickListener{
+            // Start Activity Leaderboard
+            val intent = Intent(this, Entrainement::class.java)
             startActivity(intent)
         }
 

@@ -30,6 +30,9 @@
         android:theme="@style/Theme.WifiDirectDemo"
         tools:targetApi="31">
         <activity
+            android:name=".Entrainement"
+            android:exported="false" />
+        <activity
             android:name=".Profile"
             android:exported="false" />
         <activity
