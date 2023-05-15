@@ -115,7 +115,11 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
         minijeux.add(CutBle::class.java)
         //minijeux.add(SnakeWithoutSnake::class.java)
         for(i in list) {
-            startActivityForResult(Intent(activity,minijeux.get(i)), 1)
+            val serviceIntent=Intent(activity,minijeux.get(i))
+            val acti : WifiDirectActivity= this.activity as WifiDirectActivity
+            serviceIntent.putExtra("user", acti.user)
+            startActivityForResult(serviceIntent, 1)
+
         }
 
     }

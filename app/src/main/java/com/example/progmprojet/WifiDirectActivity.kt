@@ -33,7 +33,7 @@ class WifiDirectActivity : AppCompatActivity(), ChannelListener, DeviceActionLis
     private var receiver: MyReceiver? = null
     private var getResult: ActivityResultLauncher<Intent>? = null
     private var score=0
-
+    var user : String = ""
     /**
      * @param isWifiP2pEnabled the isWifiP2pEnabled to set
      */
@@ -91,7 +91,7 @@ class WifiDirectActivity : AppCompatActivity(), ChannelListener, DeviceActionLis
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wifi_direct)
-
+        user = intent.getStringExtra("user").toString()
         // Indicates a change in the Wi-Fi Direct status.
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION)
         // Indicates a change in the list of available peers.
