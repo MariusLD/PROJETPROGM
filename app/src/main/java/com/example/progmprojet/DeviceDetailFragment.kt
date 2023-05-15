@@ -100,8 +100,8 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
             }
 
             if (info?.groupFormed == true && info?.isGroupOwner == false && compteur==3) {
-                sendScore()
                 compteur=0
+                sendScore()
             }
             // Utilisez le résultat ici
         }
@@ -113,7 +113,7 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
         minijeux.add(QuizzSound::class.java)
         minijeux.add(PieGame::class.java)
         minijeux.add(CutBle::class.java)
-        minijeux.add(SnakeWithoutSnake::class.java)
+        //minijeux.add(SnakeWithoutSnake::class.java)
         for(i in list) {
             startActivityForResult(Intent(activity,minijeux.get(i)), 1)
         }
@@ -158,7 +158,7 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
         val random = Random()
         val set = mutableSetOf<Int>()
         while (set.size < 3) {
-            val rt=random.nextInt(6)
+            val rt=random.nextInt(5)
             set.add(rt)
         }
         val numbers = set.toList()

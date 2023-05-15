@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         minijeux.add(QuizzSound::class.java)
         minijeux.add(PieGame::class.java)
         minijeux.add(CutBle::class.java)
-        minijeux.add(SnakeWithoutSnake::class.java)
+        //minijeux.add(SnakeWithoutSnake::class.java)
         minijeux= minijeux.shuffled() as ArrayList<Class<*>>
         val quizz : Intent =  Intent(this,QuizzSound::class.java)
         val button: Button = findViewById(R.id.button)
@@ -62,8 +62,8 @@ class MainActivity : AppCompatActivity() {
                             //serviceIntent.putExtra("activity",this)
                             serviceIntent.putExtra("score",this.score)
                             //this.startActivity(serviceIntent)
-                            getResult?.launch(Intent(serviceIntent))
                             i=0
+                            getResult?.launch(Intent(serviceIntent))
                         }
                     }
                     val rejoue = it.data?.getIntExtra("rejouer",0)
@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
         val random = java.util.Random()
         val set = mutableSetOf<Int>()
         while (set.size < 3) {
-            val rt=random.nextInt(6)
+            val rt=random.nextInt(5)
             set.add(rt)
         }
         val numbers = set.toList()
