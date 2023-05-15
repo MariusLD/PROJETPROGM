@@ -113,7 +113,7 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
         minijeux.add(QuizzSound::class.java)
         minijeux.add(PieGame::class.java)
         minijeux.add(CutBle::class.java)
-        //minijeux.add(SnakeWithoutSnake::class.java)
+        minijeux.add(SnakeWithoutSnake::class.java)
         for(i in list) {
             val serviceIntent=Intent(activity,minijeux.get(i))
             val acti : WifiDirectActivity= this.activity as WifiDirectActivity
@@ -162,7 +162,7 @@ class DeviceDetailFragment() : Fragment(), ConnectionInfoListener {
         val random = Random()
         val set = mutableSetOf<Int>()
         while (set.size < 3) {
-            val rt=random.nextInt(5)
+            val rt=random.nextInt(6)
             set.add(rt)
         }
         val numbers = set.toList()
